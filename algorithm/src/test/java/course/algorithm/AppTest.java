@@ -21,4 +21,9 @@ public class AppTest
 	public void testIntertionSortRV(){
 		assertArrayEquals(outputArray, SortAlgorithms.insertionSortRV(inputArray));
 	}
+	
+//	@Test
+//	public void testQuickSort(){
+//		assertArrayEquals(outputArray, SortAlgorithms.quickSortPureRecusion(inputArray, 0, inputArray.length-1));
+//	}
 }

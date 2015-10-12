@@ -41,7 +41,74 @@ public class SortAlgorithms {
 		}
 		return a;
 	}
+	
+	/**
+	 * MergeSort TextBook Version
+	 * @param A
+	 * @param l
+	 * @param r
+	 */
+	public void mergeSort(int[] A, int l, int r) {
 
+        if (l < r) {
+
+            //split the array into 2
+            int q = (l + r) / 2;
+
+            //sort the left and right array
+            mergeSort(A, l, q);
+            mergeSort(A, q + 1, r);
+
+            //merge the result
+            merge(A, l, q + 1, r);
+        }
+    }
+	
+	/**
+	 * Textbook merge method
+	 * @param A
+	 * @param l
+	 * @param q
+	 * @param r
+	 */
+	private void merge(int[] A, int l,
+            int q, int r) {
+
+        int leftArrayEnd = q - 1;
+
+        int numElements = r - l + 1;
+        int[] resultArray = new int[numElements];
+        int resultArrayBegin = 0;
+
+        // Find the smallest element in both these array and add it to the result
+        // array i.e you may have a array of the form [1,5] [2,4]
+        // We need to sort the above as [1,2,4,5]
+        while (l <= leftArrayEnd && q <= r) {
+            if (A[l] <= A[q]) {
+                resultArray[resultArrayBegin++] = A[l++];
+            } else {
+                resultArray[resultArrayBegin++] = A[q++];
+            }
+        }
+
+        // After the main loop completed we may have few more elements in
+        // left array copy them.
+        while (l <= leftArrayEnd) {
+            resultArray[resultArrayBegin++] = A[l++];
+        }
+
+        // After the main loop completed we may have few more elements in
+        // right array copy.
+        while (q <= r) {
+            resultArray[resultArrayBegin++] = A[q++];
+        }
+
+        // Copy resultArray back to the main array
+        for (int i = numElements - 1; i >= 0; i--, r--) {
+            A[r] = resultArray[i];
+        }
+    }
+	
 	
 	/*
 	 * This is a recursive version of quicksort
@@ -76,7 +143,7 @@ public class SortAlgorithms {
 				swap(A, j, i+1);
 				i++;
 			}
-			return recursivePartition(A, p, r, i, j++);
+			return recursivePartition(A, p, r, i, ++j);
 		}
 	}
 	
@@ -86,5 +153,46 @@ public class SortAlgorithms {
 		A[n] = p;
 		return A;
 	}
+	
+	
+	
+	/*
+	 **************************************************************************************
+	 * Heap Sort
+	 **************************************************************************************
+	 */
+	 public static boolean isMaxHeap(int[] A){
+		 for(int i=0; i<A.length; i++){
+			int p = (int) Math.floor(i/2);
+			if (p < i){
+				if(A[p] < A[i]){
+					return false;
+				}
+			}
+		 }
+		 return true;
+	 }
+	
+	/**
+	 * Ma-Heapify will return the array A in which max-heap will be ensured for A[i] as root
+	 * @param A A[i] may or may not be max-heap
+	 * @param i assuming right sub-tree and left sub-tree of A[i] is max-heap
+	 */
+	public static int[] maxHeapify(int[] A, int i){
+		i++;
+		int largest = 2*i;
+		if((2*i)<A.length && (2*i+1)<A.length){
+			if (A[2*i]<A[2*i+1]){
+				largest = 2*i+1;
+			}
+			if(A[largest] > A[i]){
+				swap(A, i, largest);
+				maxHeapify(A, largest);
+			}
+		}
+		return A;
+	}
+	
+	
 	
 }

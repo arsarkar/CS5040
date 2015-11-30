@@ -52,23 +52,23 @@ public class SelfMatchingPairFinder {
 	/**
 	 * method to find the optimal self matching pair
 	 * @param x array of strings
-	 * @return
+	 * @return size of optimal self matching pair set
 	 */
 	public int findLargestSelfMatchingSet(String[] x){
-		
+		int noValue = -1;
 		//store the length of the sequence 
 		int xLength = x.length;
 		//declare the optimal recursive structure as nXn matrix where n = x.length
 		int[][] c = new int[xLength][xLength];
 		//declare an auxiliary matrix to denote which pairs are chosen
-		int[][] solution = new int[xLength][xLength]; 
+		String[][] solution = new String[xLength][xLength]; 
 		
 		
 		//initialize the matrix
 		for(int i=0; i<xLength; i++){
 			for(int j=0; j<xLength; j++){
 				c[i][j]= 0;
-				solution[i][j]=0;
+				solution[i][j]="#";
 			}
 		}
 		
@@ -92,7 +92,8 @@ public class SelfMatchingPairFinder {
 					//pairs could possibly made from elements from index i+1 and l-1.
 					if(x[i].equals(x[l])){
 						c[i][l] = c[i+1][l-1]+1;
-						solution[i][l] = 1;
+						//mark the solution that this pair is added
+						solution[i][l] = "+"; 
 					}
 					else{
 						//else first calculate the leftmost pair of xi and the rightmost pair of xl.
@@ -124,19 +125,18 @@ public class SelfMatchingPairFinder {
 							if(c1>=c2 && c1>=c3){
 								c[i][l] = c1;
 								if (i != j)
-									solution[i][j] = 1;
-									solution[k][l] = 0;
+									solution[i][l] = j+","+noValue;
 							}
-							//if (i.j) is chosen
+							//if (k,l) is chosen
 							else if(c2>=c1 && c2>=c3){
 								c[i][l] = c2;
 								if (k != l)
-									solution[k][l] = 1;
-									solution[i][j] = 0;
+									solution[i][l] = noValue+","+k;
 							}
 							//if none is chosen just skip both elements 
 							else{
 								c[i][l] = c3; 
+								solution[i][l] = "SW";
 							}
 						}
 						//if (i,j) and (k,l) are self matching pairs
@@ -164,23 +164,27 @@ public class SelfMatchingPairFinder {
 							if(c1>=c2){
 								c[i][l] = c1;
 								if((i==j)&&(k<l)){
-									solution[k][l] = 1;
+									solution[i][l] = noValue+","+k;
 								}
 								//case 3: if right pair is a self pair then only choose left pair
 								else if((i<j)&&(k==l)){
-									solution[i][j] = 1;
+									solution[i][l] = j+","+noValue;
 								}
 								else if ((i<j) && (k<l) ){
-									solution[i][j] = 1;
-									solution[k][l] = 1;
+									solution[i][l] = j+","+k;
+								}
+								else{
+									solution[i][l] = "SW";
 								}
 							}
 							else{
 								c[i][l] = c2;
+								solution[i][l] = "SW";
 							}
 						}
 					}
 				}
+				//This will initialize the lower half of the diagonal with 0
 				else{
 					c[i][l]= 0;
 				} 
@@ -189,24 +193,57 @@ public class SelfMatchingPairFinder {
 		}
 
 		System.out.println("Cost Matrix:");
-		printMatrix(c);
+		printMatrixInt(c);
 		
 		System.out.println("Reconstruction table:");
-		printMatrix(solution);
+		printMatrixString(solution);
 		
 		//parse solution and print out result
+		int setSize = c[0][xLength-1];
 		System.out.println("Optimal self matching set size:: " + c[0][xLength-1]);
-		for(int i=0; i<xLength; i++){
-			for(int j=0; j<xLength; j++){
-				if(solution[i][j]==1){
-					System.out.println("("+i+","+j+")");
-				}
-			}
-		}
-		
+		int i= 0, j = xLength-1;
+		parseSolution(solution, i, j);
 		return c[0][xLength-1];
 		
 	}
+	
+	/**
+	 * parses the solution matrix to identify which pairs are added to the optimal set
+	 * @param solution
+	 * @param i
+	 * @param j
+	 */
+	private void parseSolution(String[][] solution, int i, int l){
+		if (solution[i][l].equals("+")){
+			System.out.println("("+i+","+l+")");
+			parseSolution(solution, i+1, l-1);
+		}
+		else if(solution[i][l].equals("SW")){
+			parseSolution(solution, i+1, l-1);
+		}
+		else if(solution[i][l].equals("#")){
+			return;
+		}
+		else{
+			String[] indices = solution[i][l].split(",");
+			int j = Integer.parseInt(indices[0]);
+			int k = Integer.parseInt(indices[1]);
+			if (k == -1){
+				parseSolution(solution, i, j);
+				parseSolution(solution, j+1, l);
+			}
+			else if(j == -1){
+				parseSolution(solution, i, k-1);
+				parseSolution(solution, k, l);
+			}
+			else{
+				parseSolution(solution, i, j);
+				parseSolution(solution, j+1, k-1);
+				parseSolution(solution, k, l);
+			}
+		}
+	}
+	
 	
 	/**
 	 *  Procedures findPairOfRightIndex and
@@ -245,15 +282,24 @@ public class SelfMatchingPairFinder {
 	private void printArray(String[] x){
 		System.out.print("X:");
 		for(String s:x){
-			System.out.print(s+" ");
+			System.out.print(s+"\t");
 		}
 		System.out.print("\n");
 	}
 
-	private void printMatrix(int[][] x){
+	private void printMatrixInt(int[][] x){
 		for(int i= 0; i<x.length; i++){
 			for(int j=0; j<x.length; j++){
-				System.out.print(x[i][j]+" ");
+				System.out.print(x[i][j]+"\t");
+			}
+			System.out.print("\n");
+		}
+	}
+	
+	private void printMatrixString(String[][] x){
+		for(int i= 0; i<x.length; i++){
+			for(int j=0; j<x.length; j++){
+				System.out.print(x[i][j]+"\t");
 			}
 			System.out.print("\n");
 		}

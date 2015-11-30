@@ -1,5 +1,6 @@
 package course.algorithm;
 import java.io.Console;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 
@@ -161,38 +162,81 @@ public class SortAlgorithms {
 	 * Heap Sort
 	 **************************************************************************************
 	 */
-	 public static boolean isMaxHeap(int[] A){
-		 for(int i=0; i<A.length; i++){
-			int p = (int) Math.floor(i/2);
-			if (p < i){
-				if(A[p] < A[i]){
-					return false;
-				}
-			}
+	 public static boolean isMaxHeap(int[] A, int i){
+		 //if the node i has left child
+		 if ((2*i+1)<A.length ){
+			 //if the left child heap is max heap and itself maintains heap property with i
+			 if (!isMaxHeap(A, 2*i+1) || A[i]<A[2*i+1]){
+				 return false; //left child is not heap or it self violates heap
+			 }
+			 else{
+				 //if the node i has right child
+				 if ((2*i+2)<A.length ){
+					 //if the left child heap is max heap and itself maintains heap property with i
+					 if (!isMaxHeap(A, 2*i+2) || A[i]<A[2*i+2]){
+						 return false; //right child is not heap or it self violates heap
+					 }
+					 else return true;//both left and right child are max heap and i is itself max heap
+				 }
+				 else return true; //trivially as the left child is max heap and has no right child
+			 }
 		 }
-		 return true;
+		 else return true; //trivially as no leaf
 	 }
 	
 	/**
-	 * Ma-Heapify will return the array A in which max-heap will be ensured for A[i] as root
+	 * Max-Heapify will return the array A in which max-heap will be ensured for A[i] as root
 	 * @param A A[i] may or may not be max-heap
 	 * @param i assuming right sub-tree and left sub-tree of A[i] is max-heap
 	 */
 	public static int[] maxHeapify(int[] A, int i){
-		i++;
-		int largest = 2*i;
-		if((2*i)<A.length && (2*i+1)<A.length){
-			if (A[2*i]<A[2*i+1]){
-				largest = 2*i+1;
+
+		int largest = i;
+		//if left child exists, check if it is bigger than parent i
+		if((2*i+1)<A.length){
+			if(A[i]<A[2*i+1]){
+				largest = 2*i+1; 
 			}
-			if(A[largest] > A[i]){
-				swap(A, i, largest);
-				maxHeapify(A, largest);
+		}
+		//if right child exists, check if it is bigger than parent i
+		if((2*i+2)<A.length){
+			if(A[i]<A[2*i+2]){
+				if (A[2*i+1]<A[2*i+2])
+				largest = 2*i+2; 
 			}
+		}
+		//if parent is not the largest then swap with the largest and call max-heapify on the largest
+		if(largest != i){
+			A = swap(A, i, largest);
+			return maxHeapify(A, largest);
 		}
 		return A;
 	}
 	
+	/**
+	 * Calls maxHeapify from floor((n-1)/2) node to 0
+	 * @param A
+	 * @return
+	 */
+	public static int[] buildMaxHeap(int[] A){
+		for(int i=(int) Math.floor((A.length/2)-1); i>=0; i--){
+			A = maxHeapify(A, i);
+		}
+		return A;
+	}
 	
+	public static int[] heapSort(int[] A){
+		int[] sortedArray = new int[A.length];
+		A = buildMaxHeap(A);
+		for(int i=A.length-1; i>=1;i--){
+			sortedArray[i] = A[i];
+			A = swap(A, i, 0);
+			int[] B = A;
+			A = new int[i];
+			A = B;
+			maxHeapify(A, 0);
+		}
+		return A;
+	}
 	
 }

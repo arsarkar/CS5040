@@ -16,7 +16,7 @@ public static void main(String[] args) {
 		String[] testFiles = args;
 		MaxSkipChain finder = new MaxSkipChain();
 		for(int i=0;i<args.length;i++){
-			System.out.println("Unit Test "+(i+1)+" Case File : "+testFiles[i]);
+			System.out.println("\nUnit Test "+(i+1)+" Case File : "+testFiles[i]);
 			try {
 				//create File Reader to read the file
 				FileReader inputFile = new FileReader(testFiles[i]);
@@ -170,6 +170,9 @@ public static void main(String[] args) {
 	 * @param j
 	 */
 	private int parseSolution(int[] x, String[][] solution, int i, int l, int m){
+		if (i<0 || l<0){
+			return m;
+		}
 		if (solution[i][l].equals("+")){
 			skipChain[m] = i;
 			m++;

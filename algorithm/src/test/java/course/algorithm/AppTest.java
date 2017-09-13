@@ -1,6 +1,10 @@
 package course.algorithm;
 
 import org.junit.Test;
+
+import course.advanced.SubSetSum;
+import course.advanced.SubSetSumSeries;
+
 import static org.junit.Assert.*;
 /**
  * Unit test for simple App.
@@ -63,5 +67,29 @@ public class AppTest
 		assertArrayEquals(outputArray, SortAlgorithms.heapSort(inputArray));
 	}
 	
+	@Test
+	public void testSubSetSum(){
+		int set[] = {1, 2, 3, 4, 5, 6};
+        int sum = 6;
+        int n = set.length;
+        SubSetSum sss = new SubSetSum();
+        if (sss.isSubsetSum(set, n, sum) == true)
+           System.out.println("Found a subset with given sum");
+        else
+           System.out.println("No subset with given sum");
+	}
+	
+	@Test
+	public void testSubSetSeries(){
+		int set[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
+        int sum = 25;
+        int n = set.length;
+        SubSetSumSeries sss = new SubSetSumSeries();
+        int numSubSets = sss.isSubsetSum(set, n, sum);
+        if (numSubSets > 0)
+           System.out.println("Found a subset with given sum" + numSubSets);
+        else
+           System.out.println("No subset with given sum");
+	}
 	
 }
